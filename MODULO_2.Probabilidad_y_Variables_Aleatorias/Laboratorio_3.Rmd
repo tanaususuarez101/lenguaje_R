@@ -1,0 +1,409 @@
+---
+title: "Laboratorio 3"
+author: "Tanausú Jorge Suárez Martín"
+date: "6 de octubre de 2017"
+output: word_document
+---
+
+## Ejercicio 1. Leer el Data Frame que se encuentra en el fichero "gusanos.txt". Con los datos en él incluidos:##
+```{r}
+datos <-read.table(file="../../x_Data_Labs_R/gusanos.txt", header=TRUE)
+attach(datos)
+names(datos)
+```
+
+Estos son los datos con los que vamos a trabajar
+```{r}
+summary(datos)
+```
+
+
+**a) Calcular, las medias de densidad de gusanos por tipo de vegetación.**
+```{r}
+tapply(Densidad.gusanos,Vegetacion,mean)
+```
+
+
+**b) Evaluar los parámetros de dispersión de las áreas de los terrenos y su pendiente.**
+```{r}
+sd(Pendiente)
+mean(Pendiente)
+
+sd(Area)
+mean(Area)
+```
+Teniendo en cuenta las desviaciones de ambas variables y su respectivas medias, podemos llegar a la idea que existe una dispersión de los datos respecto a cada media.
+
+
+**c) Visualizar si el ph del suelo influye en la densidad de gusanos del terreno.**
+```{r}
+reg <-lm(pH.Suelo~Densidad.gusanos)
+coeff = coefficients(reg)
+
+plot(pH.Suelo~Densidad.gusanos,
+     main=paste0("Densidad de gusano respecto al PH del suelo 'y = ",round(coeff[2],1), "x+",round(coeff[1],1),"'"),
+     col="red",
+     pch="+",
+     ylab = "Densidad de gusanos kg/m²",
+     xlab = "PH del suelo   m²"
+     )
+abline(reg, col = "Blue")
+```
+Observando el gráfico y haciendo una representación lineal parece que existe alguna relación entre la densidad de gusanos y el PH del suelo. Entre mayor es la densidad, mayor ph.
+
+
+**d) Ordenar por tamaño del terreno los datos.**
+```{r}
+datos[order(datos$Area),]
+```
+Los datos han sido ordenados de menor a mayor por defecto.
+
+
+**e) Analizar el posible efecto de la humedad en la densidad de gusanos**
+
+Vamos hacer un estudio gráficamente sobre la relación que existe entre la densidad de gusanos y la humedad del terreno.
+```{r}
+boxplot(Densidad.gusanos~Humedo,
+        names = c("Seco","Humedo"),
+        ylim = c(0,10),
+        xlab = "Estado del terreno",ylab="Densidad de gusanos",
+        main = "Comparación del estado del terreno según la densidad de gusanos",
+        col = rgb(79,129,189,max=255),border = rgb(128,128,128,max=255))
+```
+
+Ahora mostraremos numéricamente los valores de densidad de gusanos en el terreno humedo
+```{r}
+den <- Densidad.gusanos[Humedo == "TRUE"]
+quantile(den)
+```
+comprobamos la diferencia que existe en el rango interquartílico para el terreno seco
+```{r}
+IQR(den)
+```
+
+Lo mismo que anteriormente, pero esta ves para terreno seco
+```{r}
+den <- Densidad.gusanos[Humedo == "FALSE"]
+quantile(den)
+```
+Con su respectivo rango interquartílico
+```{r}
+IQR(den)
+```
+
+Analizando los valores devuelto y mostrados en el gráfico (para verlo visualmente) se puede observar que el terreno humedo tiene una mayor densidad de gusanos en comparación al terreno seco. Puede que exista algún tipo de efecto en el terreno por las condiciones de éste, pero no parece ser de gran relevancia a simple vista.
+
+
+**f) Analizar el fichero "gusanos_na.txt" que contiene NAs y utilizar las funciones na.omit y complete.cases para evaluar el apartado**
+
+Volvemos a cargar los datos como anteriormente hemos hecho y mostramos que valores hemos cargado. Como resultado vemos un apartado con valores NAS
+```{r}
+#install.packages("DMwR")
+#library(DMwR)
+datos <-read.table(file="../../x_Data_Labs_R/gusanos_na.txt", header=TRUE)
+summary(datos)
+```
+
+Ahora vamos a utilizar la opción "na.omit" que eliminará los registros o filas, que contenga valores perdidos.
+```{r}
+datos_sin_na <- na.omit(datos)
+summary(datos_sin_na)
+```
+
+Devuelve los valores que no tenga NA
+```{r}
+summary(datos[complete.cases(datos),])
+```
+
+
+**¿Qué conclusiones se pueden sacar? ¿cómo afectaría el resultado si se sustituyen los NAs por ceros?**
+Las concluciones que se puede sacar eliminando filas que tenga algún valor perdido es que podemos hacer un estudio estadístico erroneo al eliminar datos que puedan ser relevante para el estudio.
+En el caso que sustituyamos los NAs por ceros, podríamos llevar la distribución hacia valores erroneos, (modificación de media, mediana, etc) si existiera muchos valores perdidos. 
+
+
+## Ejercicio 2: Utilizar el Data Set "ToothGrowth" y asignarlo a un data frame que denominaremos "datos". El Data Set contiene información del efecto de la vitamina C (suplementos tipos VC y OJ en dosificaciones en mg/día) en el crecimiento de los dientes de conejillos de indias.## 
+```{r}
+#install.packages("readr")
+library(readr)
+datos <- read_csv(file = "../../x_Data_Labs_R/ToothGrowth.csv")
+names(datos)
+```
+
+Se pide:
+
+**a) Cambiar los nombres de los vectores y factores (len,dose y supp) por (longitud, dosificación y suplemento)**
+```{r}
+names(datos) <- c("x1","longitud","suplemento", "dosificacion")
+names(datos)
+attach(datos)
+```
+
+
+**b) Calcular las medias y varianzas de longitud por cada tipo de suplemento y por distintas dosificaciones.**
+
+Primero vamos a calcular las medias de longitud de los dientes (milimetro) por tipo de suplementos
+```{r}
+tapply(longitud,suplemento,mean);
+```
+Ahora vamos a calcular la varianza de la longitud de los dientes (milimetro) por tipo de suplementos
+```{r}
+tapply(longitud,suplemento,var);
+```
+Lo que nos da a entender estos resultado mostrados aquí, es que las muestras estan muy disperar
+
+En el segundo caso, vamos a mostrar la media en las dosificaciones según los tipos de vitaminas
+```{r}
+tapply(dosificacion,suplemento,mean);
+```
+Calculamos la varianza de las longitudes de los dientes por tipo de suplementos
+```{r}
+tapply(dosificacion,suplemento,var);
+```
+En este caso los valores están más cercanos a cero en comparación con el caso anterior, lo que significa que los valores de la muestra están más cercanos a la media.
+
+**c) Obtener los cuartiles de la distribución de longitudes por tipo de dosificación, así como los valores máximo y mínimo. Visualizar utilizando boxplot() las longitudes por tipo de dosificación. ¿Qué conclusiones pueden obtenerse?**
+
+```{r}
+tapply(longitud,dosificacion,quantile)
+```
+En este caso nos encontramos frente a tres tipos de dosificaciones agrupadas en 0.5, 1 y 2 por mg/día .
+
+Para calcular las longitudes máximas (milimetros) de los dientes que han alcanzado por el tipo de dosificación haremos los iguiente.
+```{r}
+tapply(longitud,dosificacion,max)
+```
+
+Para las longitudes mínimas:
+```{r}
+tapply(longitud,dosificacion,min)
+```
+
+Vamos a representar graficamente las longitudes por el tipo de dosificación para hacernos una idea de los valores que hemos calculado.
+```{r}
+boxplot(longitud~dosificacion,
+        xlab = "Dosificación mg/días",
+        ylab = "Longitud mm",
+        main = "Comparación de las longitud por el tipo de dosificación suministrada",
+        col = rgb(79,129,189,max=255),border = rgb(128,128,128,max=255)
+        )
+```
+
+Parece evidente que existe una relación directa entre las dosificaciones y las longitudes de los dientes de los conejos, siendo mayores longitud entre mayor dosis se le suministra. Sería más prudente hacer también un estudio del que tipo de vitamina en cada dosi.
+
+**d) Visualizar utilizando boxplot() las longitudes por tipo de dosificación y por suplemento. ¿Qué conclusiones pueden obtenerse?**
+En este apartado vamos a realizar lo que había comentado anteriormente para ser prudente en nuestro estudio.
+
+```{r}
+boxplot(longitud~interaction(suplemento,dosificacion),
+        xlab = "Tipo de vitamina | Dosis mg/días",
+        ylab = "Longitud mm",
+        main = "Comparación de las longitud por el tipo de dosificación suministrada",
+        col = rgb(79,129,189,max=255),border = rgb(128,128,128,max=255)
+        )
+```
+
+El gráfico muestra como las longitudes en la vitamina VC en las dosificaciones 0,5 y 1 tiene una menor tasa de crecimiento que en las mismas dosis que la vitamina OJ. Sin embargo la vitamina VC en dosis de 2 mg/días tiene una mayor tasa respecto a la vitamina OJ.
+
+
+**e) Calcular el coeficiente de correlación entre longitud y dosificación. Explicar**
+
+Vamos a utilizar para este problema el coeficiente de correlación de Pearson que se utiliza cuando los datos siguen una distribución normal para comprobar si dos variables cuantitativas tienen una relación lineal entre si, es decir si cambian de la misma forma.
+```{r}
+cor(longitud,dosificacion)
+```
+el valor devuelto nos indica que la distribución asimétrica.
+
+## Ejercicio 3: Consideremos una variable aleatoria que sigue una distribución B(15, 0.33). Se pide:## 
+
+**a) Calcular la probabilidad de que la variable sea mayor que 3 y menor o igual que 7.**
+o sea, P(3 < X <= 7) = F(7) - F(3)
+```{r}
+pbinom(7,15,0.33,lower.tail = TRUE) - pbinom(3,15,0.33,lower.tail = TRUE)
+```
+Lo que he hecho ha sido a la probabilidad que sean x<=7 restarle, o quitar la probabilidad que esos 7 sean x<=3
+
+**b) Calcular la probabilidad de que sea mayor que 5.**
+P(X > 5)
+```{r}
+pbinom(5,15,0.33,lower.tail = FALSE)
+1-pbinom(5,15,0.33)
+```
+
+**c) ¿Qué valor de la variable deja por debajo de si el 75% de la probabilidad?**
+```{r}
+qbinom(0.75,15,0.33,lower.tail = TRUE)
+```
+
+**d) Calcular el percentil 95% de la distribución.**
+```{r}
+qbinom(0.95,15,0.33)
+```
+
+**e) Obtener una muestra de tamaño 1000 de esta distribución.**
+```{r}
+muestra <- rbinom(1000,15,0.33)
+```
+
+**f) Representar gráficamente la muestra de e) mediante un diagrama de barras y comparar éste con las frecuencias esperadas según el modelo que genera los datos.**
+```{r}
+muestra <-sort(muestra)
+hist(muestra,
+     main = "Muestras de una distribucion B(15,0.33)",
+     freq = TRUE,
+     labels = TRUE,
+     col = rgb(79,129,189,max=255),
+     border = "white"
+     ,yaxt = "n",
+     ylim = c(0,250),
+     #xlim = c(0,15),
+     xlab = "Muestras",
+     ylab = "Frecuencias"
+     )
+lines(muestra,dbinom(muestra,15,0.33)*1000, col="red")
+```
+
+## Ejercicio 4: Consideremos una variable aleatoria que sigue una distribución P(7.2). Se pide:## 
+**a) Calcular la probabilidad de que sea mayor o igual que 10.**
+```{r}
+1-ppois(9,7.2)
+```
+
+**b) Calcular la probabilidad de sus valores mayores o iguales a 2 y menores o iguales a 8.**
+```{r}
+ppois(8,7.2) - ppois(1,7.2)
+```
+P(2 <= X <= 8) = 70%
+
+**c) Obtener el percentil 75 de la distribución.**
+```{r}
+qpois(0.75,7.2)
+```
+Representa los valores que se encuentra por debajo del 75%
+
+**d) ¿Qué valor es el que deja por debajo de sí el 5% de los valores más bajos de la variable?**
+```{r}
+qpois(0.05,7.2)
+```
+
+**e) Obtener una muestra de tamaño 500 de la distribución, representarla gráficamente mediante un diagrama de barras y comparar éste con las frecuencias esperadas según el modelo que genera los datos.**
+```{r}
+set.seed(100)
+muestra <-sort(rpois(500,7.2))
+hist(muestra,
+     main = "Muestras de una distribucion P(7.2)",
+     freq = TRUE,
+     labels = TRUE,
+     col = rgb(79,129,189,max=255),
+     border = "white"
+     ,yaxt = "n",
+     ylim = c(0,150),
+     xlab = "Muestras",
+     ylab = "Frecuencias abss"
+     )
+lines(muestra,dpois(muestra,7.2)*500, col="red")
+```
+
+
+
+## Ejercicio 5: Consideremos una variable aleatoria W con distribución N (250, 13). Se pide: ## 
+**a) P [240 < W <= 245.5]**
+```{r}
+pnorm(245.5,250,13) - pnorm(240,250,13)
+```
+P(245.5) - P(240)
+
+**b) P [W >= 256].**
+Aquí podemos calcular el caso contrario, si pnorm devuelve los < que
+```{r}
+1 - pnorm(255,250,13,lower.tail = TRUE)
+```
+
+**c) Si queremos desechar el 5% de valores más altos de la distribución y el 5% de valores más bajos, ¿con qué intervalo de valores nos quedaremos?**
+P(0.05 < X < 0.95)
+
+El primer intervalo será
+```{r}
+qnorm(0.95,250,13)
+```
+
+El segundo será
+```{r}
+qnorm(0.05,250,13)
+```
+Trabajaremos en el intervalos [228.62,271.38]
+
+**d) Obtener una muestra de tamaño 1000 de la distribución, representar la función de densidad de esta distribución y compararla con el histograma de la muestra obtenida.**
+```{r}
+muestra <- sort(rnorm(1000,250,13))
+hist(muestra,
+     main = "Distribución normal N(250,13)",
+     freq = FALSE,
+     col = rgb(79,129,189,max=255),
+     border = "white",
+     ylab = "Probabilidad",
+     xlab = "Muestras",
+     ylim=c(0,0.05)
+     )
+lines(muestra,dnorm(muestra,250,13),col="red")
+```
+## Ejercicio 6. Obtener una muestra aleatoria de tamaño 100 con distribución normal N(0,1). Se pide: ## 
+**a) Evaluar su media, mediana y desviación típica.**
+los cálculos respectivamente al enunciado son:
+```{r}
+muestra <-rnorm(100,0,1)
+mean(muestra)
+median(muestra)
+sd(muestra)
+```
+La desviación tipica  y la media coinciden con la Normal 0,1.
+
+**b) Representar su histograma y sobre él situar la media, la mediana, el percentil 5 y el percentil 95.**
+```{r}
+hist(muestra,
+     main = "Distribución normal N(0,1)",
+     freq = FALSE,
+     col = rgb(79,129,189,max=255),
+     border = "white",
+     ylab = "Probabilidad",
+     xlab = "Muestras",
+     xlim =c(-3,3),
+     ylim=c(0,1)
+     )
+abline(v=mean(muestra),col="red")
+abline(v=quantile(muestra,0.05),col="blue")
+abline(v=quantile(muestra,0.95),col="blue")
+abline(v=median(muestra),col="black")
+legend(x=-3,y=1, legend = c("Media","Mediana","Percentiles"),col = c("red","black","blue"),lwd=1)
+```
+Como se trata de una distribución normal los percentiles son simétricos y la media coincide en el 0
+
+
+**c) Representar en la misma gráfica que b) la función de densidad normal N(0,1).**
+```{r}
+muestra_ordenada <- sort(muestra)
+hist(muestra_ordenada,
+     main = "Distribución normal N(0,1)",
+     freq = FALSE,
+     col = rgb(79,129,189,max=255),
+     border = "white",
+     ylab = "Probabilidad",
+     xlab = "Muestras",
+     ylim =c(0,1)
+     )
+lines(muestra_ordenada,dnorm(muestra_ordenada,0,1),col="red")
+```
+
+
+**d) Calcular los coeficientes que definen los factores de forma de la distribución (Curtosis y Asimetría). Razonar las respuestas.**
+```{r}
+#install.packages("e1071")
+library("e1071", lib.loc="~/R/win-library/3.4")
+kurtosis(muestra)
+```
+Si tomamos dos cifras decimales en el coeficiente de curtosis podemos ver  que es cimétrica, próximo a cero o casi cero. Lo cual es bastante lógico ya que este valor es en comparación con una distribución normal. Representa una curva mesocurtica.
+Ahora para el valor de Asimétria utilizaremos el coeficiente de Sesgo.
+```{r}
+skewness(muestra)
+```
+lo que representa es mayor concentración de valores a la izquierda de la media que a su derecha
+

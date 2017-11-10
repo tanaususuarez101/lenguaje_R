@@ -1,0 +1,256 @@
+---
+title: "lectura_4"
+author: "Tanausú Jorge Suárez Martín"
+date: "29 de octubre de 2017"
+output: word_document
+---
+
+## Cuestión 1. Considérese el experimento de lanzar una moneda tres veces. Se pide: ##
+**a) Establecer el Espacio Muestral**
+El espacio muestral está agrupado según los resultado de la moneda, como tenemos dos posibles resultado (cara o cruz) y tres el número de lanzamientos, el número de posibilidades que tendríamos será 2^3 = 8.
+
+```{r}
+temp <-list()
+EMmonedas<-function(n)
+{
+  temp <-list()
+  for(i in 1:n) {   temp[[i]] <-c("Cara", "Cruz")   }
+  resultados <-expand.grid(temp)
+  names(resultados) <-c(paste(rep("Lanzamiento ", n), 1:n, sep= ""))
+  return(resultados)
+}
+
+datos <- EMmonedas(3)
+datos
+```
+Leyenda:{
+  C: Cara
+  X: Cruz
+}
+Por tanto, el espacio muestral será:
+S={CCC,CCX,CXC,CXX,XCC,XCX,XXC,XXX}
+
+
+**b) Si se considera la variable aleatoria X como el número de caras obtenido en el experimento (x= 0, 1, 2, 3) establecer la función de masa de probabilidad f(x)=P(X=x) en forma de tabla.**
+```{r}
+freq_moneda = c(1,3,3,1) #número de caras obtenidas: 0 caras, 1 cara, 2 caras o 3 caras
+Probabilidades<-round(freq_moneda/sum(freq_moneda),2)
+Probabilidades
+```
+##CONTRUIR UNA TABLA EN WORD##
+
+**c) Para la variable aleatoria X del apartado b) encontrar la función de distribución acumulativa F(x) = P(X???x)**
+```{r}
+F_Prob_Acum = cumsum(Probabilidades)
+F_Prob_Acum
+```
+
+**d) Comprobar que F(x) cumple las condiciones de función de distribución.**
+Las condiciones que tiene que cumplir es que la variable aleatoria X sea menor o igual que el número real x, o sea
+F(x) = P(X<=x)
+```{r}
+Probabilidades<=F_Prob_Acum
+```
+Por tanto para cada valor se cumple la condición.
+
+
+**e) Utilizando R representar gráficamente las funciones de los apartados c) y d)**
+
+Aquí se muestra la representación de las probabilidades acumuladas P(X<=x), como es coherente la suma de todas las probabilidades es igual a uno.
+```{r}
+Num_x<-0:3
+plot(Num_x, F_Prob_Acum,
+    xlab="Número de caras obtenido",
+    xlim=c(0,3),
+    ylab= "Probabilidad Acumulada", type="s", col="red")
+points(Num_x, F_Prob_Acum)
+grid()
+```
+
+
+El siguiente gráfico muestra la probabilidad de cada suceso.
+```{r}
+Num_x<-0:(length(freq_moneda)-1)
+plot(Num_x, Probabilidades, xlab="Número de caras obtenido",
+ylab= "Probabilidad", type="h", col="brown", lwd=5);
+grid()
+points(Num_x, Probabilidades,type= "b", pch=21, col="blue",bg="red")
+```
+
+
+## Cuestión 2: Una variable aleatoria discreta X tiene una función de masa de probabilidad definida por P(X=x)=k(1/2)^x  con x= 0,1,2,3. Se pide: ##
+
+**a) Calcular el valor de k**
+Para calcular el valor de K, primero sustituimos el valor de X.
+P(X=0) = k
+P(X=1) = k(1/2)
+P(X=2) = k(1/4)
+P(X=3) = k(1/8)
+
+Teniendo presente que las probabilidades de que un suceso ocurra está entre los valores 0 y 1. Además la suma de todos los sucesos de un espacio muestra es igual a uno.
+
+k + k(1/2) + k(1/4) + k(1/8) = 1
+k (1 + 1/2 + 1/4 + 1/8) = 1
+k (15/8) = 1
+k = 1/(15/8)
+k = 8/15
+
+**b) Obtener su función de distribución F(x)**
+Teniendo el valor de K es fácil calcular la función de distribución a partir de aquí.
+
+```{r}
+f_x <-c()
+for(i in 0:3)
+{
+  f_x[i+1]<-(8/15)*((1/2)^i)
+}
+f_x
+cumsum(f_x)
+```
+
+**c) Utilizando R representar gráficamente f(x), función de masa de probabilidad, y F(x).**
+Volvemos a realizar lo mismo que hemos hecho en los apartado, representar gráficamente las probabilidades de cada suceso
+```{r}
+x<-0:3
+plot(x,f_x,
+     xlab="Función de Masa de Probabilidad",
+     ylab="f(x)",
+     type="h",col="grey", lwd=3)
+points(x, f_x,type= "b", pch=21, col="blue",bg="red")
+grid()
+```
+
+También las frecuencias acumuladas sobre P(X<=x)
+```{r}
+F_Prob_Acum<- cumsum(f_x)
+x<-0:3
+plot(x, F_Prob_Acum,
+      ylab="F(x)",
+      xlab= "Función de Distribución Acumulativa Discreta",
+      type="s",
+      col="brown")
+points(x, F_Prob_Acum)
+grid()
+```
+
+## Cuestión 3: La producción de una industria de alimentación es de 850 paquetes de mantecados diarios que contiene 30 paquetes que no cumplen con los estándares de calidad alimentaria y 20 paquetes que presentan alteraciones visuales en el etiquetado. Se seleccionan dos paquetes al azar del lote diario sin reemplazo. Sea la variable aleatoria discreta X igual al número de paquetes de la muestra que no cumplen (0,1,2). ## 
+
+**a) Obtener la función de masa de probabilidad f(x)**
+```{r}
+f_x<-c()
+for(i in 0:2)
+{
+  f_x[i+1]<- (choose(50,i)*choose(800,(2-i)))/choose(850,2)
+}
+f_x
+```
+La siguiente tabla muestra los sucesos para la variable aleatoria discreta, la cual representa para los casos que no cumple los estándares ni el visualizado del paquete. 
+
+
+**b) Calcular su función de distribución F(x)**
+Representación de P(X<=x)
+```{r}
+F_x_acumulada <- cumsum(f_x)
+F_x_acumulada
+```
+
+**c) Utilizando R, representar gráficamente f(x), función de masa de probabilidad, y F(x).**
+```{r}
+x<-0:2
+plot(x,f_x,
+     xlab="Función de Masa de Probabilidad",
+     ylab="f(x)", type="h",col="grey", lwd=3)
+points(x,f_x,type= "b", pch=21, col="blue",bg="red")
+grid()
+```
+El eje de función de masa de probabilidad representa la variable discreta.
+
+```{r}
+x<-0:2
+plot(x, F_x_acumulada,
+      ylab="F(x)",
+      xlab= "Función de Distribución Acumulativa Discreta",
+      type="s",
+      col="brown")
+points(x, F_x_acumulada)
+grid()
+```
+El gráfico anterior muestra la probabiidad acumulada calculada en el apartado b.
+
+
+**d) Calcular la esperanza matemática de la variable aleatoria X.**
+```{r}
+EA<-0
+for(i in 0:2)
+{
+  EA <- EA + f_x[i+1]*i
+}
+EA
+```
+Representa la cantidad media que se "espera" como resultado de seleccionar paquetes de mantecados diarios defectuosos.
+
+## Cuestión 4: Un examen tipo test de la asignatura de Métodos Estadísticos se compone de 30 preguntas de las que se pueden elegir entre cinco respuestas diferentes de las cuales sólo una es la correcta. Si el examen se contesta eligiendo al azar la respuesta a cada pregunta y X es la variable aleatoria "número de preguntas acertadas", se pide: ##
+
+**a) Razonar sobre la posible distribución de probabilidad de X**
+La variable aleatoria discreta X representa el **número de preguntas acertadas** en un examen que consta de 30 pregunta, cada pregunta solo tiene 1 respuesta correcta de 5. Así la variable valdrá:
+x=0, 1, 2, 3, 4, 5, 6, 7, ..., 28, 29, 30.
+Por tanto, deduciendo de esto existe 5x30=150 respuestas en el examen tipo test, de las cuales solo 30 son correctas (una por cada pregunta) y 120 son erroneas así viene dada la fórmula de probabilidad.
+
+choose(30,i)*choose(120(30-i))/choose(150,30)
+
+"i" representa el número de preguntas acertadas.
+
+Además, cada respuesta de cada pregunta tiene la misma probabilidad de ser elegida (si se hacen al azar).
+```{r}
+(choose(1,1)*choose(29,4))/choose(30,5)
+```
+o bien:
+```{r}
+(1/5)
+```
+
+**b) Encontrar la probabilidad de que acierte exactamente la mitad de las preguntas.**
+Primero hay que calcular el *número de preguntas acertadas*, que son 15. Después multiplicar por la probabilidad que se tiene de aciertar una.
+```{r}
+((choose(30,15)*choose(120,15))/choose(150,30))*(1/5)
+```
+Como podemos ver, dicha probabilidad es muy baja. Por tanto, llegar aprobar la mitad del examen (correspondiente a un 5 si todas las pregunta valen lo mismo) jugando con el azar es casi un milagro.
+
+**c) ¿Cuál es la probabilidad de que acierte al menos la mitad de las preguntas? Razonar la respuesta.**
+Igual que hemos procedido en el apartado anterior, pero  esta ves sumando las probabilidades de cada una.
+```{r}
+f_x<-0
+for(i in 1:15)
+{
+  f_x<- f_x + ((choose(30,i)*choose(120,(30-i)))/choose(150,30))*(1/5)
+}
+f_x
+```
+
+**d) Calcular el número esperado de respuestas correctas**
+```{r}
+Me<-0
+for(i in 0:30)
+{
+  prob<- ((choose(30,i)*choose(120,(30-i)))/choose(150,30))*(1/5)
+  Me <- Me+prob*i
+}
+Me
+```
+El número de respuestas esperadas que estén correctas realizando el examen al azarson entre 1 y 2 preguntas, entre las 30.
+
+**e) Evaluar la varianza de la variable aleatoria X**
+el cálculo de la varianza viene dado por la SUM((X - media)·F(Xi)). Por tanto, para calcular la varianza primero habrá que calcular la media. Esta biene dada por SUM(Xi·F(Xi)).
+```{r}
+f_x <-c()
+x <- 0:30
+for(i in 0:30)
+{
+  f_x[i+1] <- ((choose(30,i)*choose(120,(30-i)))/choose(150,30))
+}
+media <- sum(x*f_x)
+varianza <-sum(((x-media)^2)*f_x)
+varianza
+```
+
+

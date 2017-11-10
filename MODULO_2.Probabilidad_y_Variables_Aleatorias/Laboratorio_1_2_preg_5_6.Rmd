@@ -1,0 +1,95 @@
+---
+title: "Lectura_5"
+author: "Tanausú Jorge Suárez Martín"
+date: "31 de octubre de 2017"
+output: word_document
+---
+## Ejercicio 5: Leer el fichero "casas.txt" que incluye el precio de viviendas en ??? por localizaciones en España. Generar un vector "Precios" a partir de los datos indicados en el fichero. Realizar a continuación las siguientes operaciones: ##
+** A<-rank(Precios)** 
+** B<- sort(Precios)** 
+** C<- order(Precios)** 
+** Comparativa<-data.frame(Precios,A,B,C)** 
+** Comparativa** 
+## Explicar la diferencia entre las diferentes columnas que resultan en cada caso.## 
+```{r}
+library(readr)
+casas <- read_delim("../../x_Data_Labs_R/casas.txt", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+attach(casas)
+names(casas)
+```
+
+Primero el vector Precios.
+```{r}
+Precios<-c(Precio)
+Precios
+```
+
+Aplicamos las funciones.
+```{r}
+A<-rank(Precios)
+B<-sort(Precios) 
+C<-order(Precios)
+A;B;C
+```
+
+Vamos a mostrar el resultado de cada tipo
+```{r}
+data.frame(Precios,A,B,C)
+```
+
+B: Ordena de menor a mayor los valores del vector
+A: rank devuelve la posición qe debería estar el elemento para esta ordenado.
+C: order indica que valor es mas pequeño que el valor de es posición.
+
+
+## Ejercicio 6: Diseñar una función para encontrar el factorial de un vector x: x!=x·(x-1)·(x-2)·...· 2 · 1, pero sin utilizar los bucles for (solo con while o repeat). Denominar a esta función fac2() y realizar la comprobación con sapply() de la forma:##
+sapply(0:5 , fac2)
+[1] 1 1 2 6 24 120
+
+```{r}
+fac2<-function(x){
+  a<-1
+  while(x > 0){
+    a <- a*x
+    x <- x-1
+  }
+  return(a)
+}
+c(fac2(0),fac2(1),fac2(2),fac2(3),fac2(4),fac2(5))
+```
+
+Utilizamos la el comando que no han dicho y comprobando el resultado.
+```{r}
+sapply(0:5, fac2)
+```
+
+
+
+## Ejercicio 7. Diseñar una función que rellene el área entre una curva dada por un vector y el eje de ordenadas, desde una posición inicial (xlimite1) a otra final (xlimite2). Se deberá incluir:##
+** a) Parámetros de entrada: el vector de ordenadas x y de abscisas y, las posiciones inicial y final de las ordenadas (xlimite1, xlimite2) y el color de relleno.** 
+** b) Comprobación de los parámetros de entrada que garanticen la estabilidad de la función.** 
+** c) Introducir mejoras con la posibilidad de incluir algún texto adicional en alguno de los ejes o en la propia gráfica.** 
+```{r}
+area<- function(x,y,xlimite1,xlimite2,col){
+  print(is.vector(x))
+  
+  if(is.vector(x)|| is.vector(y)){
+    print("Error en el vector de entrada de x o y")
+    return ()
+  }
+  #missing()
+  
+}
+
+#area(x=2,1,1,"red")
+
+#area()
+```
+
+```{r}
+
+
+```
+
+

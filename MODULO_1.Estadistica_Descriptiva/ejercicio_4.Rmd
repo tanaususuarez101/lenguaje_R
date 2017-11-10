@@ -1,0 +1,142 @@
+---
+title: "cuestion4"
+author: "Tanausú Suárez"
+date: "29 de septiembre de 2017"
+output: word_document
+---
+**Cuestión 4 (opcional): El fichero "Cervantes.txt" contiene los datos de la aplicación del test de la Escala Cervantes de Calidad de Vida a una muestra de 200 personas. Se pueden descargar utilizando: 
+Un mayor valor del "Indice" se corresponde con un peor nivel de calidad de vida en esta escala. Los distintos componentes del fichero pueden verse con los comandos: **
+```{r}
+datos<-read.table("Cervantes.txt",dec=".",sep = "\t") 
+attach(datos) 
+names(datos)
+```
+
+Con esta información en las cuatro columnas, utilizando R, se pide: 
+
+a) Media y desviación estándar del valor del "Indice" para toda la muestra
+media.
+```{r}
+mean(Indice)
+```
+Desviación típica.
+```{r}
+sd(Indice)
+```
+
+
+b) Media y desviación estándar del "Indice" por intervalos de edad 
+
+media
+```{r}
+tapply(Indice,Intervalo.Edad,mean)
+```
+desviación típica
+```{r}
+tapply(Indice,Intervalo.Edad,sd)
+```
+
+
+c) Media y desviación estándar del "Indice" por nivel de estudios 
+
+media
+```{r}
+tapply(Indice,Nivel.de.Estudios,mean)
+```
+
+Desviación típica
+```{r}
+tapply(Indice,Nivel.de.Estudios,sd)
+```
+
+
+d) Histograma de la distribución de las variables "Índice" y de la "Edad" en el conjunto de la muestra 
+```{r}
+hist(Indice,
+     breaks=seq(0,200,25),
+     labels=TRUE,
+     main="test de la Escala Cervantes de Calidad de Vida",
+     xlab="tamaño de las observaciones",
+     ylab = "Índice",
+     col = c("red", "yellow", "green", "violet", "orange", "blue", "pink", "cyan"),
+     ylim=c(0,100),
+     xlim=c(0,150))
+```
+```{r}
+hist(Edad,
+     breaks=seq(0,200,25),
+     labels=TRUE,
+     main="test de la Escala Cervantes de Calidad de Vida",
+     xlab="tamaño de las observaciones",
+     ylab = "Edad",
+     col = c("red", "yellow", "green", "violet", "orange", "blue", "pink", "cyan"),
+     ylim=c(0,150),
+     xlim=c(20,80))
+```
+
+e) Calcular los cuartiles y rango intercuartílico del caso d) 
+
+```{r}
+quantile(Indice)
+```
+
+```{r}
+IQR(Indice)
+```
+
+f) Analizar gráficamente la variabilidad del "Indice" por segmentos de edad y por nivel de estudios utilizando diagramas de caja. Encontrar los factores de forma 
+```{r}
+boxplot(Indice~Intervalo.Edad,
+        xlab="Intervalo de edad",
+        ylab="Variabilidad de calidad de vida",
+        col = c("red", "yellow", "green", "violet", "orange", "blue", "pink", "cyan"),
+        main = "Variabilidad del índice por edad")
+```
+En el análizis del este digrama de caja, por intervalo de edad, se observa que el valor de índice de calidad de vida está muy centrado respecto de un intervalo a otro. También se aprecia como en el intervalo de rango de edad entre 55 y 60 años existen valores perdidos. Otro detalle destacable es como en el rango de edad de 61 a 64 la calidad de vida, de las personas encuestadas, mejora. Existe una una diferencia notable en el rango intercuartílico alejándose bastante de la media, esto puede ser devido a la diferencia de opinión que tiene la población en el rango de edad.
+
+
+```{r}
+boxplot(Indice~Nivel.de.Estudios,
+        xlab="Intervalo de edad",
+        ylab="Variabilidad del nivel de estudio",
+        col = c("red", "yellow", "green", "violet", "orange", "blue", "pink", "cyan"),
+        main = "Variabilidad del índice `por su nivel de estudio")
+```
+Aquí vemos ciertas diferencia en comparación del gráfico anterior, aumentando la calidad de vida según mejore el estudio de la población. Los grupos parecen coincidir en opinión dentro de cada población, ya que, el rango intercuantílico en este caso es menor que en el gráfico anterior respecto al intervalo de edad.Al igual que antes también nos encontramos con valores atípicos en estudios primarios siendo un índice muy alto, corrrespodiendose a una peor calidad de vida. Aquí podemos decir que esto puede ser devido al poder adquisitivo que se tiene por el nivel de estudio.
+
+
+g) Encontrar los factores de forma de la distribución global del "Indice" y de la "Edad" (Concentración, Asimetría y Kurtosis), 
+
+Índice
+
+Concentración
+```{r}
+skewness(datos$Indice)
+```
+
+kurtosis
+```{r}
+kurtosis(datos$Indice)
+```
+
+Edad
+Concentración
+```{r}
+skewness(datos$Edad)
+```
+
+kurtosus
+```{r}
+kurtosis(datos$Edad)
+```
+
+
+
+```{r}
+Gini(datos$Indice)
+```
+```{r}
+Gini(datos$Edad)
+```
+
+

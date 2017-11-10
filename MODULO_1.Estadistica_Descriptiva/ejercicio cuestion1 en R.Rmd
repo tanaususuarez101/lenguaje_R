@@ -1,0 +1,212 @@
+---
+title: "calculadora"
+author: "Tanausú Suárez"
+date: "27 de septiembre de 2017"
+output: html_document
+---
+
+Media
+```{r}
+valores <-c(43.0, 45.2, 46.5, 35.9,47.0,35.8,47.2,27.4,35.8,53.1,43.0,49.1,58.5,50.0,46.6,57.2,53.4, 51.0,39.3,55.4,47.0,56.1,38.3)
+mean(valores)
+```
+Desviación típica o desviación estándar
+```{r}
+sqrt(var(valores))
+sd(valores)
+```
+
+
+Mediana
+```{r}
+median(valores)
+```
+
+
+Quartiles
+```{r}
+quantile(valores)
+```
+
+Rango intercuartílico
+```{r}
+IQR(valores)
+```
+
+Percentil 5 y percentil 95
+```{r}
+quantile(valores,0.05)
+quantile(valores,0.95)
+```
+
+Histograma
+```{r}
+hist(valores,
+     xlab="Presión",
+     ylab="Días",
+     main="Presiones del conducto de refrigeración del aire acondicionado",
+     col = c("red", "yellow", "green", "violet", "orange", "blue", "pink", "cyan"))
+```
+
+Boxplot
+```{r}
+boxplot(valores,
+        ylab = "Presiones",
+        col = 5,
+        notch = TRUE)
+```
+
+```{r}
+valores2 <- c(55,65,67,58,69,65,78,87,86,65,87,76,90,88,76,67,65,57,88,83,65,82,71,64,89)
+total <- length(valores2)
+menos65 <- valores2[valores2<65]
+
+(length(menos65)/total)
+
+```
+
+
+Peso más frecuente
+```{r}
+moda <- function(x) {
+  tabla <- table(x)
+  return(as.numeric(names(tabla)[tabla == max(tabla)]))
+ 
+}
+moda(valores2)
+```
+
+
+```{r}
+quantile(valores2)
+IQR(valores2)
+```
+
+```{r}
+personas6080 <- valores2[(valores2 >= 60)&(valores2 < 80)]
+length(personas6080)
+
+```
+
+```{r}
+
+hist(valores2,
+     breaks=seq(50,90,5),
+     ylab="Nº Personas",
+     xlab ="Pesos en kg",
+     main="Histograma de personas por kg",
+     col="cyan",
+     labels=TRUE,
+     ylim = c(0,8)
+     )
+```
+
+
+
+Ejercicio 3
+```{r}
+valores <-c(rep(5000,54),rep(15000.5,105),rep(25000.5,303),rep(35000.5,476),rep(45000.5,180),rep(55000.5,105),rep(65000.5,49),rep(75000.5,22),rep(9000.5,10))
+
+intervalo <- seq(from = 0, to = 100000, by = 10000)
+
+```
+
+
+
+
+
+```{r}
+hist(valores,
+    main ="Salarios anuales de los empleados", xlab = "Salarios anuales", ylab="Frecuencia relativa",
+    freq = FALSE,
+    ylim = c(0,0.00004),xlim = c(0,90000),   
+    breaks = intervalo,
+    col = rgb(79,129,189,max=255),border = "white")
+grid()
+
+```
+
+
+```{r}
+hist(valores,
+     main ="Salarios anuales de los empleados", xlab = "Salarios anuales", ylab="Frecuencia absoluta",
+    freq = TRUE,
+    ylim = c(0,500),xlim = c(0,90000),
+    yaxt="n",
+    labels = TRUE,
+    breaks = intervalo,
+    col = rgb(79,129,189,max=255),border = "white")
+```
+
+
+
+
+
+
+```{r}
+moda <- function(x) {
+  tabla <- table(x)
+  return(as.numeric(names(tabla)[tabla == max(tabla)]))
+ 
+}
+moda(x)
+```
+
+```{r}
+mean(x)
+```
+
+```{r}
+IQR(x)
+```
+```{r}
+quantile(x,0.5)
+```
+
+
+
+```{r}
+quantile(x,0.25)
+quantile(x,0.75)
+```
+
+
+```{r}
+install.packages("e1071")
+library(e1071)
+```
+
+```{r}
+#install.packages("ineq")
+#install.packages("e1071")
+
+Gini(valores)
+```
+```{r}
+skewness(valores)
+```
+```{r}
+kurtosis(valores)
+```
+
+
+
+
+
+
+
+```{r}
+quantile(x,0.9) - quantile(x,0.1)
+```
+
+```{r}
+boxplot(freq.re,
+        ylab = "Salarios",
+        col = 5)
+```
+
+```{r}
+boxplot(freq.abs,
+        ylab = "Salarios",
+        col = "yellow")
+```

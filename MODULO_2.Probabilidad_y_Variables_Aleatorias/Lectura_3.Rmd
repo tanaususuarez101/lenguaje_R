@@ -1,0 +1,150 @@
+---
+title: "practica_2"
+author: "Tanausú Jorge Suárez Martín"
+date: "6 de octubre de 2017"
+output: word_document
+---
+
+## Cuestión 1. De una baraja perfecta de 40 cartas, se reparten al azar cuatro. Calcular las probabilidades de los siguientes sucesos: ##
+**a) Sacar cuatro ases**
+La probabilidad de que una persona le hayan repartido 4 cartas y que todas esas cartas sean ases es:
+```{r}
+casos_favorables <-0
+casos_posibles <- choose(40,4)
+for(i in 1:4)
+{
+  casos_favorables <- casos_favorables + choose(4,i)
+}
+(casos_favorables/casos_posibles)
+
+```
+
+
+La probabilidad que de 40 cartas nos toquen 4 ases es de 35.54%. Esta probabilidad viene dada por casos favorables dividido entre los casos posibles. Los casos favorables sería que de las 4 cartas repartidas 1 sea as, o bien de las 4, dos sean ases, o bien 3 sean ases, o 4 de cuatro sean ases. Los casos posibles son los grupos de 4 que podemos formar con una baraja de 40 cartas.
+
+**b) Sacar cuatro cartas iguales**
+Si consideramos "iguales" que tenga el mismo valor numérico la probabilidad se calcula como en el caso anterior, casos favorables dividido casos posibles. En este caso, los casos favorables sería obtener de cada palo la misma carta.
+¿Cuántas cartas hay con el mismo valor? 10
+
+hay 10 formas de obtener 4 cartas iguales (4 cartas de ases, 4 cartas de dos, 4 cartas de tres, etc)
+
+```{r}
+casos_favorables <-0
+casos_posibles <- choose(40,4)
+for(i in 1:4)
+{
+  casos_favorables <- casos_favorables + choose(4,i)
+}
+(casos_favorables*10/casos_posibles)
+
+```
+La multiplicación de los casos favorables por 10, tiene su razón en que existe 10 cartas por cada palo. Así la probabilidad de obtener 4 cartas iguales es igual a 0.2% (redondeando).
+
+
+**c) Sacar las cuatro cartas iguales de un mismo palo**
+
+```{r}
+casos_favorables <-0
+casos_posibles <- choose(40,10)
+for(i in 1:4)
+{
+  casos_favorables <- casos_favorables + (choose(4,i)*choose(36,(10-i)))
+}
+(casos_favorables/casos_posibles)
+```
+
+
+**d) Sacar al menos una sota**
+Existen una sota por palo, por tanto: P(sota) = 4/40 = 0.1
+
+**e) Sacar una sota y un rey**
+
+P(sota and rey) = P(sota) + P(rey) = 4/40 + 4/36
+```{r}
+4/40 + 4/36
+```
+al sacar la primera ves una sota, la segunda ves que se saca una carta hay una carta menos en el mazo.
+
+## Cuestión 2: En el sótano del Edificio de Informática y Sistemas hay un centro de reprografía con tres fotocopiadoras A, B y C cuyos porcentajes de fallo son 3%, 5% y 4% respectivamente. Un trabajador del servicio utiliza una de ellas al azar y realiza copias. Al entregar el trabajo al estudiante que lo solicitó se observa que una de las fotocopias está defectuosa. ¿Cuál es la probabilidad de que fuera hecha por la fotocopiadora B?##
+
+Lo que estamos buscando es una probabilidad condicionada, esto significa lo siguiente: que probabilidad existe que una fotocopia falle y haya sido por la fotocopiadora B. Representamos el evento de fallar como "F". Así que:
+
+P(B|F) = P (intercesión(B,F)) / P(F) = P(F|B)·P(B)/P(F).
+
+Sabiendo que:
+  P(F|A) = 0.03
+  **P(F|B) = 0.05**
+  P(F|C) = 0.04
+También sabemos que podemos elegir una de las tres fotocopiadora, así que, la probabilidad de P(A) = P(B) = P(C) = 1/3
+Necesitamos saber la P(F), que es cuando tenemos la probabilidad que la fotocopias estén defectuosa y es dada por
+P(F) = P(F|A)·P(A)+ P(F|B)·P(B)'+ P(F|C)·P(C)' = 
+```{r}
+(0.03*(1/3))+(0.05*(1/3))+(0.06*(1/3))
+```
+P(F) = 0.04666667
+
+Por tanto, la probabilidad que la fotocopia haya sido por la fotocopiadora.
+```{r}
+(0.05*(1/3))/0.04666667
+```
+P(B|F) = 0.3571428
+
+## Cuestión 3: Una entidad bancaria administra los tres fondos de inversión siguientes que incluye en su cartera: ##
+**a) Fondo A: Fondo de Inversión en Activos del Mercado (FIAMM)**
+**b) Fondo B: Fondos de Inversión Mobiliaria (FIM)**
+**c) Fondo C: Fondo de Renta Variable**
+**El patrimonio que gestiona cada uno de dichos fondos se eleva a 3000 M??? repartidos entre el Fondo A (1.400 M???), el Fondo B (850 M???) y el Fondeo C (750 M???). Dada la evolución de los tipos de interés y del mercado bursátil, la probabilidad de que la entidad tenga rendimiento positivo en cada uno de estos fondos es para el Fondo A del 99%, para el Fondo B del 60 % y para el fondo C del 75%. Si un partícipe invirtió en dichos fondos y obtuvo un rendimiento negativo, ¿Cuál es la probabilidad de que el fondo fuese de renta variable (Fondo C).**
+
+Tomando como 
+  RN:rendimiento negativo.
+  RP:rendimiento positivo.
+  
+Lo que nos trata de pedir es P(C|RN) = P(RN|C)·P(C) / P(RN).
+Sabemos que:
+  P(RP|A) = 0.99
+  P(RP|B) = 0.6
+  P(RP|C) = 0.75
+  
+Por tanto, el caso contrario es:
+  P(RN|A) = 0.1
+  P(RN|B) = 0.4
+  P(RN|C) = 0.25
+  
+También tendremos que calcular cuanto es el % de fondo de cada fondo de inversión P(A), P(B), P(C).
+```{r}
+A=1400/3000
+B=850/3000
+C=750/3000
+A;B;C
+```
+
+Entonces lo único que nos qeda por averiguar es P(RN) = P(A)·PP(RN|A) + P(B)·P(RP|B) + P(C)·P(RP|C)
+```{r}
+PRN=A*0.1+B*0.4+C*0.25
+PRN
+```
+Así ya tenemos el valor de todo, solo nos queda calcular lo que nos pide. NOTA: P(C|RN) = PCRN.
+```{r}
+PCRN = (0.25*C)/PRN
+PCRN
+```
+
+## Cuestión 4: ¿Cuantos números de tres cifras se pueden formar sin que haya una cifra repetida? ##
+Se trata de combinar un conjunto de 10 elementos sin que se repita ninguno. Esos 10 elementos corresponde al {0,1,2,3,4,5,6,7,8,9}, valores decimales
+m=10 en grupo de 3 cifras n=3.
+```{r}
+prod(10:(10-3+1))
+```
+Entonces se puede crear 720 números con de 3 cifras.
+
+## Cuestión 5: ¿Cuántas palabras distintas, de 12 letras se pueden formar con las letras de la palabra MEDITERRANEO? ##
+Se trata de una permutación lo cual, cada letra estará en cada posición distinta.
+```{r}
+n=12
+M=1;E=3;D=1;I=1;T=1;R=2;A=1;N=1;O=1
+factorial(12)/(factorial(M)*factorial(E)*factorial(D)*factorial(I)*factorial(T)*factorial(R)*factorial(A)*factorial(N)*factorial(O))
+```
+
+
+
+

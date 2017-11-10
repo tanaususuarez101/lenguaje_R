@@ -1,0 +1,203 @@
+---
+title: "Lectura_5"
+author: "Tanausú Jorge Suárez Martín"
+date: "31 de octubre de 2017"
+output: word_document
+---
+## Cuestión 1: La nota de la prueba de acceso de las titulaciones de Ciencias de la Salud en la ULPGC se distribuye normalmente según una normal de media 7.9 y desviación estándar 0.45. Si el total de plazas ofertadas es de 120 y el total de solicitantes 515. ¿Cuál será la nota mínima para acceder a Ciencias de la Salud? Utilizar R en los cálculos
+
+Función para realizar los cálculos sobre la nota mínima que necesita un estudiante para acceder a una plaza.
+```{r}
+data_prob_value<-function(p,data) {
+    mu<-mean(data)
+    sigma<-sqrt(var(data))
+    aleat<-seq(min(data),max(data),0.00001)
+    distribucion<-pnorm(aleat,mu,sigma)
+    
+    i=length(distribucion)
+    while(distribucion[i]>p) {
+      if((i-1)==0) stop ("No data, p-Valueverysmall")
+      i=(i-1)
+    }
+    salida<-c("X-Value",round(aleat[i], digits= 3), "P-value", round(p, digits= 3))
+    return(salida)
+}
+
+pobla<-seq(0,100,0.001)
+poblacion<-rnorm(pobla,7.9,0.45)
+
+z<-seq(-3,3,0.00001)
+poblacion_normal<-rnorm(z,0,1)
+```
+
+Para contestar a esta cuestión, primero nos tenemos que hacer dos preguntas: la primera ¿Cuántos alumnos obtendrán plaza? y  la segunda ¿cuántos no obtendrán plaza?. Para responder a la primera nos basta con dividir el número de plazas entre el número de solicitantes:
+```{r}
+obt_plaza <- 120/512
+obt_plaza
+```
+Para responder a la segunda, es justamente el caso contrario a la primera
+```{r}
+no_plaza <- 1-obt_plaza
+no_plaza
+```
+Ahora hay que explicar el significado de qué es lo que tenemos aquí. La primera cifra "obt_paza" corresponde al 23% de alumnos que tendrán una nota superior a la nota mínima, que justamente es lo que estamos buscando y además corresponde con la parte derecha de la distribución normal. La segunda cifra "no_plaza" deja al 76% por la izquierda a los solicitantes que no obtendrán plaza.
+
+Buscando en la tabla estandar N(0,1) un valor de z que deje el 0.234375 por la derecha, ese valor es el 0.765625. Por tanto P(z<0.72) = 0.7642 que se aproxima al valor buscado. Por tanto la **nota mínima** = (0.45)(0.72)+7.9 = **8.224**
+
+Lo calculamos con R:
+```{r}
+data_prob_value(no_plaza,poblacion)
+data_prob_value(no_plaza,poblacion_normal)
+```
+
+Dicho resultado coincide con el valor esperado y también con el de la distribución N(0,1).
+También podría haber usado el siguiente caso, mucho más fácil.
+```{r}
+qnorm(no_plaza,mean=mean(poblacion),sd= sqrt(var(poblacion)))
+```
+
+
+
+## Cuestión 2: Una empresa local (TIRMA) produce paquetes de ambrosias con un peso teórico de 160 gramos. Debido a fluctuaciones aleatorias en el empaquetado, el peso de los paquetes de ambrosia sigue una distribución normal. Se sabe que el 10% de los paquetes pesan menos de 160 gramos y que el 5% de los paquetes pesan más de 162.5 gramos.
+** a) Encontrar la media y la desviación típica de la distribución aleatoria subyacente. **
+
+P(X<160) = 0.10
+P(X>162.5) = 0.05
+
+```{r}
+z1 <- qnorm(0.1)
+z1
+```
+
+```{r}
+z2 <- qnorm(1-0.05)
+z2
+```
+
+Podemos hacernos una idea de donde cae Z1 y z2 representadas en rojo en la distribución normal que se muestra a continuación.
+```{r}
+muestra <- sort(rnorm(seq(-3,3,0.00001),0,1))
+hist(muestra,
+     main = "Distribución normal N(0,1)",
+     freq = FALSE,
+     col = rgb(79,129,189,max=255),
+     border = "white",
+     ylab = "Densidad",
+     xlab = "Población",
+     yaxt = "n"
+     )
+lines(muestra,dnorm(muestra,0,1),col="blue")
+abline(v=z1,col="red")
+abline(v=z2,col="red")
+```
+
+
+
+ 
+** b) Calcular utilizando R el porcentaje de paquetes que tienen peso inferior a 158 gramos. Razonar la respuesta. **
+Con R es tarea fácil realizar dichos cálculos habiendo calculado la media y desviación típica,simplemente es:
+```{r}
+mu = 151.12
+sigma = 6.94
+dnorm(157.5,mean = mu,sd = sigma)
+```
+
+
+
+## Cuestión 3: Dos variables aleatorias continuas X e Y se distribuyen aleatoriamente siguiendo la distribución que se indica en la figura, donde fXY (x,y)=0 para valores de (x,y) con x>2 e y>4 considerados en la misma. Demostrar que son independientes y que sigmaXY=0. ##
+
+
+```{r}
+inc<-0.01
+y<-seq(0,0.5-inc,inc)
+x<-1-y
+z<-function(X1,Y1)
+{
+    z<-rep(0,length(X1))
+    for(i in 1:length(X1)) {
+    if((X1[i]>1) |(Y1[i]>0.5)|(X1[i]<0.5))
+          z[i]=0
+    else z[i]<-(1/16)*X1[i]*Y1[i] }
+    return(z)
+}
+fd<-outer(x,y,z)
+modelop<-persp(fd, theta = 15, phi = 10, d=5, xlim = c(-0.1,1),
+                ylim=c(-0.1,1), nticks = 5, ticktype = "detailed",
+                xlab = "X", ylab = "Y", zlab = "f(x,y)", col="green",
+                border="brown", r=20)
+                z0<-rep(0,length(y))
+lines(trans3d(x,y,z0, modelop),lwd=3, col="black")
+lines(trans3d(c(0.5,0.5),c(0.5,0.5), c(0,z(0.5,0.5)),
+modelop),col="blue", lwd=3, lty = 3)
+lines(trans3d(c(0,1),c(0,0),c(0,0), modelop),col="blue", lwd=3)
+lines(trans3d(c(0,0),c(0,1),c(0,0), modelop),col="blue",lwd=3)
+points(trans3d(x,y,z(x,y),modelop),col="brown",lwd=3)
+
+
+
+qnorm(160)
+```
+
+
+    
+
+## Cuestión 4: Un restaurante de San Mateo está especializado en pata de cerdo asada. Las patas de cerdo las proporciona una granja y tienen un peso que se distribuye de forma normal. De las últimas 1000 ejemplares de pata, 330 pesaron menos de 2.780 gramos y sólo 75 rebasaron los 3720 gramos. El dueño del restaurante considera aceptable que el peso no baje de 2600 gramos. Se pide:
+##PONER FIGURA##
+
+n = 1000
+
+```{r}
+# P(X<2780) = 0.33
+z1 <- qnorm(330/1000)
+z1
+```
+```{r}
+# P(X>3720) = 0.075
+z2 <-qnorm(1-(75/1000))
+z2
+```
+
+
+
+** a) Calcular la media y la desviación típica de la distribución.**
+** b) Evaluar utilizando R el número de patas de cerdo que devuelve el propietario del restaurante, de las 1000 que le llegan si se considera su criterio de selección.**
+Considera aceptable P(X>2600)
+```{r}
+freq<-pnorm(2600,3000,500)
+freq
+```
+```{r}
+freq*1000
+```
+El propietario devuelve 212 patas de cerdo porque no pesan lo suficiente según su criterio
+
+
+## Cuestión 5: En los dos grupos de Métodos Estadísticos se ha realizado una medida del coeficiente intelectual de los estudiantes. En el grupo A la media fue de 100 y la desviación típica de 10. En el grupo B fue de 105 y 12 respectivamente. Ambos grupos tienen idéntico número de estudiantes. Escogido al azar un estudiante se comprueba que su coeficiente intelectual es de 120. Suponiendo que en cada grupo la distribución del coeficiente intelectual sigue una distribución normal y que el coeficiente de cada estudiante es independiente, calcular utilizando el Teorema de Bayes y R la probabilidad de que el estudiante provenga del grupo B.
+
+
+```{r}
+#Grupo A
+A120 <- dnorm(120,100,10)
+A120
+```
+```{r}
+#Grupo B
+B120 <- dnorm(120,105,12)
+B120
+```
+Por tanto en el teorema de bayes
+
+|- 0.5-- Grupo A -- P(120|A) --> 0.005405844
+|
+|
+|--0.5-- Grupo B -- P(120|B) --> 0.01522323
+                
+                
+                
+Por tanto, la probabilidad de P(B|120) = P(120|B)/(P(B)·P(120|B)+P(A)·P(120|A))
+```{r}
+(0.5)*A120/((0.5*A120)+(0.5*B120))
+```
+La probabilidad que el alumno se haya cogido del grupo B es de 26%
+
+
